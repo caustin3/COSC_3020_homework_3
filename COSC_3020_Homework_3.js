@@ -14,13 +14,17 @@ function 2_opt(graph, start){
 	cost,
 	new_cost,
 	routes_found = [];
-	//add the starting node to the route
-	route.push(start);
+	
+	
 	
 	//finds a random route for the graph 
 	for(let i =0; i < grap.length,i++){	
-	route[i] =i;
+		if(i !== start ){
+			route[i] =i;
+		}
 	}
+	//add the starting node to the route
+	route.unshift(start);
 	//makes the route random 
 	route = shuffle(route);
 	
@@ -32,26 +36,28 @@ function 2_opt(graph, start){
 	
 	while(routes_found.length <(grap.length*grap.length) ){	
 	
-		let k =  math.floor(math.random()*grap.length+1),
-		i =  math.floor(math.random()*k);
+		let k =  math.floor(math.random()*grap.length),
+		i =  math.floor(math.random()*k+1);
 		
 		//finds a new route
 		route = 2_opt_reversed(route,i,k)
 		
 		//set new cost t o0 
 		new_cost =0	
-		
-		//sums up for cost for the new route
-		for(let i = 0; i < route.length-1; i++){
-			//adds up the cost from the i node in route and i+1 node 
-			new_cost =+ graph[route[i]][route[i+1]];		
-		}
-		
-		//set the new cost to cost if new cost is less then the old cost 
-		if(new_cost < cost){
-		 cost = new_cost ;
-		}
-		routes_found.push([route,new_cost]);		
+		//checks to see if the route was found before 
+		if(!routes_found.includes(route)){
+			//sums up for cost for the new route
+			for(let i = 0; i < route.length-1; i++){
+				//adds up the cost from the i node in route and i+1 node 
+				new_cost =+ graph[route[i]][route[i+1]];		
+			}
+			
+			//set the new cost to cost if new cost is less then the old cost 
+			if(new_cost < cost){
+			 cost = new_cost ;
+			}
+			routes_found.push([route,new_cost]);
+		}		
 	}
 	return cost;
 }
