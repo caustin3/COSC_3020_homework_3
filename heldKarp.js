@@ -38,3 +38,18 @@ heldKarp(graph,unvisited,start,storedTours=[]) {
   }
 
 }
+
+// Create a randomly weighted complete digraph for testing
+function graphMaker(length) {
+  graph = new Array(length);
+
+  for (let i = 0; i < length; i++) {
+    graph[i] = new Array(length);
+    graph[i][i] = 0;
+    for (let j = 0; j < length; j++) {
+      if (i !== j) graph[i][j] = Math.ceil(10*Math.random());
+    }
+  }
+
+  return graph;
+}
