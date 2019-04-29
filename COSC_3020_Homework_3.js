@@ -1,5 +1,5 @@
 // COSC 3020 assignment 3
-// Created by Jacob Williams and Chase Austin W09115598, 4/29/2019
+// Created by Jacob Williams and Chase Austin:W09115598, 4/29/2019
 // Last modified: 4/29/2019
 //2_opt 
 
@@ -10,7 +10,9 @@ function two_opt(graph){
 	cost=0,
 	new_cost=0,
 	//map of all the route that have been found 
-	routes_found = new Map();	
+	routes_found = new Map(),	
+	check_done=0;
+		
 	//makes a route for the graph from one node to all other nodes
 	for(let i =0; i < graph.length;i++){	
 		route.push(i);		
@@ -22,9 +24,14 @@ function two_opt(graph){
 		//adds up the cost from the i node in route and i+1 node 
 		cost += graph[route[i]][route[k]];				
 	}
+	
 	//add the route and it's cost to the map
 	routes_found.set(route.join("-"),cost);	
-	while(routes_found.size <(graph.length*graph.length)){		
+	
+	while(routes_found.size <(graph.length*graph.length)&& check_done < 6){			 	
+		if(graph.length < 4){
+		check_done++;	
+		}
 		//finds a new route
 		let k =  Math.floor(Math.random()*route.length+1);
 		let i =  Math.floor(Math.random()*k+1);
@@ -35,15 +42,15 @@ function two_opt(graph){
 			for(let i = 0; i < route.length-1; i++){
 				k = i +1;
 				//adds up the cost from the i node in route and i+1 node 
-				new_cost += graph[route[i]][route[k]];		
+				new_cost += graph[route[i]][route[k]];							
 			}
 			
 			//set the new cost to cost if new cost is less then the old cost 			
 			if(new_cost < cost){
 			cost = new_cost ;
 			}			
-			routes_found.set(route.join("-"),new_cost);
-		}	
+			routes_found.set(route.join("-"),new_cost);				
+		}		
 	//set new cost to 0 
 	new_cost =0;
 	}	
@@ -82,34 +89,49 @@ function shuffle(array) {
 		array[random_i] = temp;
 	}
 	return array;
-};
+}
+
+
+function graphMaker(length) {
+  graph = new Array(length);
+
+  for (let i = 0; i < length; i++) {
+    graph[i] = new Array(length);
+    graph[i][i] = 0;
+    for (let j = 0; j < length; j++) {
+      if (i !== j) graph[i][j] = Math.ceil(10*Math.random());
+    }
+  }
+
+  return graph;
+}
 
 
 
-function test(){	
-var t1 = performance.now();
-var t0 = performance.now();
+function test(){
+	var t0,t1,t2,t3,graph,Held_Karp_shortest,two_opt_shortest;
+	console.log("time is in milliseconds");
+	console.log("size:\t Held_Karp route:\t 2_opt route:\t Held_Karp time:\t 2_opt time:\t");
+	for(let i = 0; i , i < 10000; i++ ){
+		graph = graphMaker(i)		
+		t0 = Date.now();
+		//Held_Karp_shortest = Held_Karp(graph);
+		t1 = Date.now();	
+		t2 = Date.now();
+		two_opt_shortest = two_opt(graph);		
+		t3 = Date.now();
+		console.log(graph.length+":"+Held_Karp_shortest+":"+two_opt_shortest+":"+(t1-t0)+":"+(t3-t2));
+		
+	}
+}
 
-var graph;
+test();
+
+
+
+
+
 
 	
-console.log("Held_Karp's shortest path :");
-t0 = performance.now();
 
-console.log(Held_Karp(graph));
-
-t1 = performance.now();
-
-console.log("Held_Karp; graph of size: "+graph.length +"Call to took: " + (t1 - t0));
-console.log("\n");
-
-console.log("two_opt's shortest path :");
-t0 = performance.now();
-
-console.log(two_opt(graph));
-
-t1 = performance.now();
-console.log("graph of size: "+graph.length +"Call to took: " + (t1 - t0));
-console.log("\n");
-
-}
+	
