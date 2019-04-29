@@ -90,7 +90,7 @@ function test(){
 var t1 = performance.now();
 var t0 = performance.now();
 
-var graph ;
+var graph;
 
 	
 console.log("Held_Karp's shortest path :");
@@ -113,12 +113,3 @@ console.log("graph of size: "+graph.length +"Call to took: " + (t1 - t0));
 console.log("\n");
 
 }
-
-
-
-
-
-
-	
-
-	
