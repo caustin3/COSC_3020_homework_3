@@ -1,78 +1,66 @@
-//Chase_Austin 
-//Date 23/April/2019
-//COSC_3020_Homework_3
+// COSC 3020 assignment 3
+// Created by Jacob Williams and Chase Austin W09115598, 4/29/2019
+// Last modified: 4/29/2019
+//2_opt 
 
-function Held_Karp(graph, start){
-	var nb_nodes = graph.length;			
-}
-
-
-//graph need to be an adjMatrix, and start is the index of the node that is the start
-function 2_opt(graph, start){
+//takes a graph that is an adjMatrix
+function two_opt(graph){
 	//route is the indexes of the nodes in the adjMatrix (i.e. 1,2,3,4,5,6)
 	let route =[],	
-	cost,
-	new_cost,
-	routes_found = [];
-	
-	
-	
-	//finds a random route for the graph 
-	for(let i =0; i < grap.length,i++){	
-		if(i !== start ){
-			route[i] =i;
-		}
-	}
-	//add the starting node to the route
-	route.unshift(start);
-	//makes the route random 
-	route = shuffle(route);
-	
+	cost=0,
+	new_cost=0,
+	//map of all the route that have been found 
+	routes_found = new Map();	
+	//makes a route for the graph from one node to all other nodes
+	for(let i =0; i < graph.length;i++){	
+		route.push(i);		
+	}	
+	//makes the route random 	
+	route = shuffle(route);		
 	for(let i = 0; i < route.length-1; i++){
+		k = i +1		
 		//adds up the cost from the i node in route and i+1 node 
-		cost =+ graph[route[i]][route[i+1]];		
+		cost += graph[route[i]][route[k]];				
 	}
-	routes_found.push([route,cost]);	
-	
-	while(routes_found.length <(grap.length*grap.length) ){	
-	
-		let k =  math.floor(math.random()*grap.length),
-		i =  math.floor(math.random()*k+1);
-		
+	//add the route and it's cost to the map
+	routes_found.set(route.join("-"),cost);	
+	while(routes_found.size <(graph.length*graph.length)){		
 		//finds a new route
-		route = 2_opt_reversed(route,i,k)
-		
-		//set new cost t o0 
-		new_cost =0	
+		let k =  Math.floor(Math.random()*route.length+1);
+		let i =  Math.floor(Math.random()*k+1);
+		route = two_opt_reversed(route,i,k);			
 		//checks to see if the route was found before 
-		if(!routes_found.includes(route)){
+		if(!routes_found.has(route.join("-"))){
 			//sums up for cost for the new route
 			for(let i = 0; i < route.length-1; i++){
+				k = i +1;
 				//adds up the cost from the i node in route and i+1 node 
-				new_cost =+ graph[route[i]][route[i+1]];		
+				new_cost += graph[route[i]][route[k]];		
 			}
 			
-			//set the new cost to cost if new cost is less then the old cost 
+			//set the new cost to cost if new cost is less then the old cost 			
 			if(new_cost < cost){
-			 cost = new_cost ;
-			}
-			routes_found.push([route,new_cost]);
-		}		
-	}
+			cost = new_cost ;
+			}			
+			routes_found.set(route.join("-"),new_cost);
+		}	
+	//set new cost to 0 
+	new_cost =0;
+	}	
 	return cost;
 }
 
 //just reverse the route it does not change the  weights/cost of the over all route 
 //based on some input indexes of the route i and k with the route. 
 //returns the new route.   
-function 2_opt_reversed(route,i,k){
+function two_opt_reversed(route,i,k){	
 	//temp array  copy of the input route  
-	let copy = route.slice();
-	//reverse the section of the reverse between k and i  
-	for(let x = i, z=k-1; x< k+1; x++){	
-	route[z] = copy[x]; 	
-	z--;	
-	}
+	let copy = route.slice();	
+	//reverse the section of the reverse between k and i
+	for(let x = i-1, z=k-1; x< k; x++){	
+		route[z] = copy[x]; 	
+		z--;		
+	}		
 	return route;	
 }
 
@@ -89,7 +77,7 @@ function shuffle(array) {
 		random_i = Math.floor(Math.random() * i);
 		i--;
 		//And swap it with the current element.
-		temp = array[Index];
+		temp = array[i];
 		array[i] = array[random_i];
 		array[random_i] = temp;
 	}
@@ -97,18 +85,12 @@ function shuffle(array) {
 };
 
 
-testHeldKarp(10,2,10,true);
 
 function test(){	
 var t1 = performance.now();
 var t0 = performance.now();
 
-var graph =
-   [[0 ,0 ,3 ,9 ,0],
-	[0 ,0 ,20,0 ,5 ],
-	[3 ,20,0 ,15,1 ],
-	[9 ,0 ,15,0 ,0 ],
-	[0 ,5 ,1 ,0 ,0 ]];
+var graph ;
 
 	
 console.log("Held_Karp's shortest path :");
@@ -121,12 +103,19 @@ t1 = performance.now();
 console.log("Held_Karp; graph of size: "+graph.length +"Call to took: " + (t1 - t0));
 console.log("\n");
 
-console.log("2_opt's shortest path :");
+console.log("two_opt's shortest path :");
 t0 = performance.now();
 
-console.log(2_opt(graph));
+console.log(two_opt(graph));
 
 t1 = performance.now();
 console.log("graph of size: "+graph.length +"Call to took: " + (t1 - t0));
 console.log("\n");
+
 }
+
+
+
+	
+
+	
