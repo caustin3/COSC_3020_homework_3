@@ -1,15 +1,24 @@
 // COSC 3020 assignment 3
 // Held-Karp algorithm for modified Traveling Salesman Problem
-// Created by Jacob Williams and Chase Austin, 4/29/2019
+// Created by Chase Austin and Jacob Williams, 4/27/2019
 // Last modified: 4/30/2019
 
-// Implements a memoized, top-down dynamically programmed Held-Karp algorithm
-// on a weighted complete digraph. Finds the shortest tour of all n vertices
-// from a specified start matrix, but not a cycle.
+// Two algorithms to compute the shortest tour on a complete, undirected
+// weighted graph (a variant of the Traveling Salesman Problem) are compared:
+//    the dynamically programmed Held-Karp algorithm, 
+//    implemented with memoization;
+//    a heuristic algorithm, stochastic 2-opt local search.
+// The worst-case asymptotic complexity and the empirical complexity of these
+// algorithms are also compared.
+//
+// Note that the 2-opt algorithm is not guaranteed to produce the truly
+// minimized solution, but that it is expected to run much more quickly than
+// the Held-Karp algorithm (requiring less time and memory).
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
-////                            The algorithm                              ////
+////                    The memoized Held-Karp algorithm                   ////
 ///////////////////////////////////////////////////////////////////////////////
 
 // We implement a data structure for storing the visited tours. The first entry
@@ -41,7 +50,7 @@ let storedTours = new Array(2);       // Store all tours and sub-tours
   storedTours[1] = new Array();
 
 function heldKarp(graph,unvisited,start) {
-  // Memoization check (slow)
+  // Memoization check
   for (let i = 0; i < storedTours[0].length; i++) {
     if (sameSet(unvisited,storedTours[0][i])) {
       return storedTours[1][i];
@@ -83,6 +92,30 @@ function heldKarp(graph,unvisited,start) {
 
 
 ///////////////////////////////////////////////////////////////////////////////
+////                    Held-Karp asymptotic complexity                    ////
+///////////////////////////////////////////////////////////////////////////////
+
+// We consider the worst-case asymptotic complexity of the Held-Karp algorithm
+// as implemented above, both in time and in space.
+
+// It is well known that there are 2^n subsets of a set of size n, so given a
+// graph on n vertices as input, the memoization check requires THETA(2^n) 
+// time. In addition, each entry in the memoized cache requires up to n + 1 
+// numbers (up to n vertices in the edge set and one cost value), so the space
+// complexity is THETA(n*2^n) = THETA(2^{n+1}).
+
+// The main part of the algorithm runs exactly once for each possible subset
+// (recalling that there are 2^n of these) because of the memoization check. 
+// Filtering the unvisited set presumably requires linear time and is done once
+// per iteration, and the base case takes only constant time; so this requires
+// (no extra memory) and THETA(n*2^n) = THETA(2^{n+1}) time as well.
+
+// Overall, our algorithm is THETA(2^{n+1}) in both time and space complexity,
+// in the worst case.
+
+
+
+///////////////////////////////////////////////////////////////////////////////
 ////                          Testing Held-Karp                            ////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -111,6 +144,8 @@ function graphMaker(length) {
 
   return graph;
 }
+
+
 /*
 let graph = graphMaker(5);
 console.log(graph);
@@ -124,91 +159,100 @@ console.log("Start = " + start);
 let finalCost = heldKarp(graph,unvisited,start);
 */
 
+
+
 ///////////////////////////////////////////////////////////////////////////////
-////                            The algorithm for 2_opt                    ////
+////              The 2-opt stochastic local search algorithm              ////
 ///////////////////////////////////////////////////////////////////////////////
 
-//takes a graph that is an adjMatrix
-function two_opt(graph){
-	//route is the indexes of the nodes in the adjMatrix (i.e. 1,2,3,4,5,6)
+// 2-opt stochastic local search. Input graph: an adjacency matrix
+function two_opt(graph) {
+	
+  // Route indexes the nodes in the adjMatrix (i.e. [0,1,2,3,4,5])
 	let route =[],	
-	cost=0,
-	new_cost=0,
-	//map of all the route that have been found 
-	routes_found = new Map(),	
-	check_done=0;
+      cost=0,
+      new_cost=0,
+      routes_found = new Map(),	 //map of all the routes found
+      check_done=0;
 		
-	//makes a route for the graph from one node to all other nodes
-	for(let i =0; i < graph.length;i++){	
+	// Make a route on the graph from one node to all other nodes
+	for(let i =0; i < graph.length; i++) {	
 		route.push(i);		
-	}	
-	//makes the route random 	
-	route = shuffle(route);		
-	for(let i = 0; i < route.length-1; i++){
-		k = i +1		
-		//adds up the cost from the i node in route and i+1 node 
-		cost += graph[route[i]][route[k]];				
+	}
+
+	// Randomize the route
+  route = shuffle(route);		
+	for(let i = 0; i < route.length-1; i++) {
+		// Sum the costs from the ith node in route and the i+1 node 
+		cost += graph[route[i]][route[i+1]];				
 	}
 	
-	//add the route and it's cost to the map
+	// Add the route and its cost to the map
 	routes_found.set(route.join("-"),cost);	
 	
-	while(routes_found.size <(graph.length*graph.length)&& check_done < 6){			 	
-		if(graph.length < 4){
+	while(routes_found.size < (graph.length*graph.length) && check_done < 6) {
+		if(graph.length < 4) {
 		check_done++;	
-		}
-		//finds a new route
+    }
+
+		// Find a new route
 		let k =  Math.floor(Math.random()*route.length+1);
 		let i =  Math.floor(Math.random()*k+1);
-		route = two_opt_reversed(route,i,k);			
-		//checks to see if the route was found before 
-		if(!routes_found.has(route.join("-"))){
-			//sums up for cost for the new route
-			for(let i = 0; i < route.length-1; i++){
-				k = i +1;
-				//adds up the cost from the i node in route and i+1 node 
-				new_cost += graph[route[i]][route[k]];							
+
+		route = two_opt_reversed(route,i,k);
+
+		// Check to see if the route was found before 
+		if(!routes_found.has(route.join("-"))) {
+			// Sum up for cost for the new route
+			for(let i = 0; i < route.length-1; i++) {
+				// Add up the cost from the ith node in route and the i+1 node 
+				new_cost += graph[route[i]][route[i+1]];							
 			}
 			
-			//set the new cost to cost if new cost is less then the old cost 			
-			if(new_cost < cost){
-			cost = new_cost ;
-			}			
+			// Set the new cost to cost if new cost is less then the old cost 			
+			if(new_cost < cost) {
+			cost = new_cost;
+			}
+
 			routes_found.set(route.join("-"),new_cost);				
 		}		
-	//set new cost to 0 
+	
+    // Set new cost to 0 
 	new_cost =0;
 	}	
 	return cost;
 }
 
-//just reverse the route it does not change the  weights/cost of the over all route 
-//based on some input indexes of the route i and k with the route. 
-//returns the new route.   
-function two_opt_reversed(route,i,k){	
-	//temp array  copy of the input route  
+
+// Reverse the part of the route between indices i and k, returning the
+// new route.
+function two_opt_reversed(route,i,k) {	
+	
+  // Temporary copy of the input route  
 	let copy = route.slice();	
-	//reverse the section of the reverse between k and i
-	for(let x = i-1, z=k-1; x< k; x++){	
-		route[z] = copy[x]; 	
-		z--;		
+
+	// Reverse the section of the reverse between i and k
+	for (let x = i-1, z=k-1; x < k; x++) {	
+		route[z] = copy[x];
+		z--;
 	}		
 	return route;	
 }
 
-//found this, takes a array and takes the elements and randomness them 
-//helps finds a random route 
-//https://gomakethings.com/how-to-shuffle-an-array-with-vanilla-js/
+
+// Randomize the elements of an array to find a random starting rout
+// Found at https://gomakethings.com/how-to-shuffle-an-array-with-vanilla-js/
 function shuffle(array) {
 	let i = array.length,
 	temp, random_i;
 
-	//While there remain elements to shuffle...
-	while (0 !== i) {
+	// While there remain elements to shuffle...
+	while (i !== 0) {
 		//Pick a remaining element...
 		random_i = Math.floor(Math.random() * i);
 		i--;
-		//And swap it with the current element.
+		
+    //And swap it with the current element.
 		temp = array[i];
 		array[i] = array[random_i];
 		array[random_i] = temp;
@@ -217,8 +261,23 @@ function shuffle(array) {
 }
 
 
-//tests the time it takes for the algorithms to f
 
+///////////////////////////////////////////////////////////////////////////////
+////              Asymptotic complexity of 2-opt local search              ////
+///////////////////////////////////////////////////////////////////////////////
+
+// 
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+////                      Testing and empirical runtime                    ////
+///////////////////////////////////////////////////////////////////////////////
+
+// Test the runtime for both algorithms on a sequence of graphs of increasing
+// size
 
 function test(){
 	var t0,t1,t2,t3,graph,Held_Karp_shortest,two_opt_shortest;
@@ -275,7 +334,7 @@ function aParticularTest() {
 
 aParticularTest();
 
-//test();
+test();
 
 
 
