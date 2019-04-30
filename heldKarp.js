@@ -31,28 +31,49 @@ function sameSet(set1,set2) {
 }
 
 
-// The Held-Karp memoized algorithm. Parameters:
+// The Held-Karp memoized algorithm, modified from pseudocode in the lectures.
+// Parameters:
 //  graph => an adjacency matrix for the undirected, weighted graph.
 //  unvisited => a list of unvisited vertices, defaulting to all of them
 //  start => a user-specified vertex from which the tour begins
 let storedTours = new Array(2);       // Store all tours and sub-tours
-storedTours[0] = new Array();
-storedTours[1] = new Array();
+  storedTours[0] = new Array();
+  storedTours[1] = new Array();
 
-function heldKarpMemo(graph,unvisited,start) {
-
-  // Let's start with a stupid-slow memoization check
+function heldKarp(graph,unvisited,start) {
+  // Memoization check (slow)
   for (let i = 0; i < storedTours[0].length; i++) {
     if (sameSet(unvisited,storedTours[0][i])) return storedTours[1][i];
   }
 
   if (unvisited.length === 2) {
-    storedTours[0].push(new Set(unvisited));
-    storedTours[1].push(graph[unvisited[0]][unvisited[1]]);
-    return graph[unvisited[0]][unvisited[1]];
+    let tour = new Set(unvisited);
+    let cost = graph[unvisited[0]][unvisited[1]];
+
+    storedTours[0].push(tour);
+    storedTours[1].push(cost);
+    return cost;
+  } 
+  
+  else {
+    // Filter out the start vertex
+    let theRest = unvisited.filter(vert => vert !== start);
+    console.log(theRest);
+
+    let tour = new Set(theRest);
+    let cost = Infinity;
+    for (let vert in theRest) {
+      let testCost = heldKarp(graph,theRest,vert)+ graph[start][vert];
+      console.log(testCost);
+      if (testCost < cost) {
+        cost = testCost;
+      }
+    }
+    storedTours[0].push(tour);
+    storedTours[1].push(cost);
+
+    return cost;
   }
-
-
 }
 
 
@@ -81,3 +102,13 @@ function graphMaker(length) {
   return graph;
 }
 
+let graph = graphMaker(3);
+console.log(graph);
+
+let unvisited = new Array();
+for (let i = 0; i < graph.length; i++) unvisited.push(i);
+
+let start = Math.ceil(graph.length*Math.random());
+
+console.log("Start = " + start);
+console.log("Final cost is " + heldKarp(graph,unvisited,start));
