@@ -45,7 +45,7 @@ function sameSet(set1,set2) {
 //  graph => an adjacency matrix for the undirected, weighted graph.
 //  unvisited => a list of unvisited vertices, defaulting to all of them
 //  start => a user-specified vertex from which the tour begins
-let storedTours = new Array(2);       // Store all tours and sub-tours
+let storedTours = new Array(2);                 // Store all tours and sub-tours
   storedTours[0] = new Array();
   storedTours[1] = new Array();
 
@@ -57,7 +57,7 @@ function heldKarp(graph,unvisited,start) {
     }
   }
 
-  if (unvisited.length <= 1) return 0;
+  if (unvisited.length <= 1) return 0;          // No tours to consider
 
   if (unvisited.length === 2) {
     let tour = new Set(unvisited);
@@ -266,7 +266,16 @@ function shuffle(array) {
 ////              Asymptotic complexity of 2-opt local search              ////
 ///////////////////////////////////////////////////////////////////////////////
 
-// 
+// The shuffle() function runs in time linear in the input size; in the worst
+// case this shuffles the entire path, involving all vertices of the graph, so
+// this is THETA(n). It also creates a single temporary array, requiring 
+// THETA(n) extra memory.
+
+// Likewise, the two_opt_reversed() function operates in time linear in the
+// distance between the indices and creates a temporary array of the same size;
+// in the worst case, this is THETA(n) in both time and space complexity.
+
+// Finally, the two_opt() function 
 
 
 
@@ -332,15 +341,6 @@ function aParticularTest() {
   console.log("2-opt shortest path = " + twoOptCost);
 }
 
-aParticularTest();
+//aParticularTest();
 
 test();
-
-
-
-
-
-
-	
-
-	
