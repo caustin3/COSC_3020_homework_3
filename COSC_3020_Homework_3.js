@@ -5,53 +5,59 @@
 
 //takes a graph that is an adjMatrix
 function two_opt(graph){
-	//route is the indexes of the nodes in the adjMatrix (i.e. 1,2,3,4,5,6)
+	
+  //route indexes the nodes in the adjacency matrix
 	let route =[],	
-	cost=0,
-	new_cost=0,
-	//map of all the route that have been found 
+    	cost=0,
+	    new_cost=0,
+	
+  // Map all the routes that have been found 
 	routes_found = new Map(),	
-	check_done=0;
+	check_done = 0;
 		
-	//makes a route for the graph from one node to all other nodes
-	for(let i =0; i < graph.length;i++){	
+	// Make a route for the graph from one node to all other nodes
+	for(let i =0; i < graph.length;i++) {
 		route.push(i);		
-	}	
-	//makes the route random 	
-	route = shuffle(route);		
-	for(let i = 0; i < route.length-1; i++){
-		k = i +1		
-		//adds up the cost from the i node in route and i+1 node 
+	}
+
+	// Randomize the route
+  route = shuffle(route);		
+	for(let i = 0; i < route.length-1; i++) {
+		k = i + 1;		
+		
+    // Add up the cost from the i node in route and i+1 node 
 		cost += graph[route[i]][route[k]];				
 	}
 	
-	//add the route and it's cost to the map
+	// Add route and its cost to the map
 	routes_found.set(route.join("-"),cost);	
 	
-	while(routes_found.size <(graph.length*graph.length)&& check_done < 6){			 	
-		if(graph.length < 4){
+	while (routes_found.size < (graph.length*graph.length) && check_done < 6) {
+    if(graph.length < 4) {
 		check_done++;	
 		}
-		//finds a new route
+
+		// Find a new route
 		let k =  Math.floor(Math.random()*route.length+1);
 		let i =  Math.floor(Math.random()*k+1);
 		route = two_opt_reversed(route,i,k);			
-		//checks to see if the route was found before 
+
+		// Check to see if the route was found before 
 		if(!routes_found.has(route.join("-"))){
-			//sums up for cost for the new route
-			for(let i = 0; i < route.length-1; i++){
-				k = i +1;
-				//adds up the cost from the i node in route and i+1 node 
+			// Sum up cost for the new route
+			for( let i = 0; i < route.length-1; i++) {
+				k = i + 1;
+				// Add up the cost from the i node in route and i+1 node 
 				new_cost += graph[route[i]][route[k]];							
 			}
 			
-			//set the new cost to cost if new cost is less then the old cost 			
+			// Set the new cost to cost if new cost is less then the old cost 			
 			if(new_cost < cost){
 			cost = new_cost ;
 			}			
 			routes_found.set(route.join("-"),new_cost);				
 		}		
-	//set new cost to 0 
+	// Set new cost to 0 
 	new_cost =0;
 	}	
 	return cost;
