@@ -110,7 +110,7 @@ function graphMaker(length) {
   return graph;
 }
 
-let graph = graphMaker(5);
+let graph = graphMaker(7);
 console.log(graph);
 
 let unvisited = new Array();
@@ -120,3 +120,4 @@ let start = Math.floor(graph.length*Math.random());
 
 console.log("Start = " + start);
 let finalCost = heldKarp(graph,unvisited,start);
+console.log(finalCost);

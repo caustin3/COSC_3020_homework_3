@@ -1,7 +1,7 @@
 // COSC 3020 assignment 3
 // Held-Karp algorithm for modified Traveling Salesman Problem
 // Created by Jacob Williams and Chase Austin, 4/29/2019
-// Last modified: 4/29/2019
+// Last modified: 4/30/2019
 
 // Implements a memoized, top-down dynamically programmed Held-Karp algorithm
 // on a weighted complete digraph. Finds the shortest tour of all n vertices
@@ -47,6 +47,8 @@ function heldKarp(graph,unvisited,start) {
       return storedTours[1][i];
     }
   }
+
+  if (unvisited.length <= 1) return 0;
 
   if (unvisited.length === 2) {
     let tour = new Set(unvisited);
@@ -221,26 +223,59 @@ function shuffle(array) {
 function test(){
 	var t0,t1,t2,t3,graph,Held_Karp_shortest,two_opt_shortest;
 	console.log("time is in milliseconds");
+  console.log();
 	console.log("size:\t Held_Karp route:\t 2_opt route:\t Held_Karp time:\t 2_opt time:\t");
-	for(let i = 0; i , i < 11; i++ ){
+	for(let i = 0; i , i < 8; i++ ){
 		let graph = graphMaker(i);
 		let unvisited = new Array();
 		for (let i = 0; i < graph.length; i++) unvisited.push(i);
 		let start = Math.floor(graph.length*Math.random());
 		
-		graph = graphMaker(i)		
+		graph = graphMaker(i);
+    console.log("Start vertex: " + start);
+    console.log(graph);    
+    console.log();
 		t0 = Date.now();
 		Held_Karp_shortest = heldKarp(graph,unvisited,start);
 		t1 = Date.now();	
 		t2 = Date.now();
 		two_opt_shortest = two_opt(graph);		
 		t3 = Date.now();
-		console.log(graph.length+":"+Held_Karp_shortest+":"+two_opt_shortest+":"+(t1-t0)+":"+(t3-t2));
+		console.log(graph.length+":\t"+Held_Karp_shortest+":\t"+two_opt_shortest+
+        ":\t"+(t1-t0)+":\t"+(t3-t2));
 		
 	}
 }
 
-test();
+// A graph I saw, tested
+function aParticularTest() {
+  let graph = [[0,6,7,6,3],
+               [6,0,10,6,9],
+               [7,10,0,2,6],
+               [6,6,2,0,2],
+               [3,9,6,2,0]];
+  let start = 4,
+      unvisited = [0,1,2,3,4];
+
+  let heldCost = heldKarp(graph,unvisited,start);
+  let twoOptCost = two_opt(graph);
+
+  console.log("The graph:");
+  console.log(graph);
+  console.log();
+
+  console.log("Start vertex = " + start);
+  console.log();
+
+  console.log("Shortest path should be 17 (see paper)");
+  console.log();
+  console.log("Held-Karp shortest path = " + heldCost);
+  console.log("2-opt shortest path = " + twoOptCost);
+}
+
+aParticularTest();
+
+//test();
 
 
 
