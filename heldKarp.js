@@ -8,19 +8,26 @@
 // from a specified start matrix, but not a cycle.
 
 
-// We implement a data structure for storing the visited tours: each element
-// has a Set object of edges in the path so far as well as the traversal cost.
+///////////////////////////////////////////////////////////////////////////////
+////                            The algorithm                              ////
+///////////////////////////////////////////////////////////////////////////////
+
+// We implement a data structure for storing the visited tours. The first entry
+// stores a Set of edges in the tour; the second stores the cost of the tour.
 function StoreTours(edges,cost) {
   this.edges = edges;
   this.cost = cost;
 }
 
+// For comparing two Sets of edges in (sub-)tours, we implement a check to see
+// whether they are the same. This was taken from code found at
+//    https://stackoverflow.com/questions/31128855.
+// Returns TRUE if the sets are the same, FALSE otherwise.
+function sameSet(set1,set2) {
+  if (set1.size !== set2.size) return false; // obvious and quick check
+  for (let x of set1) if (!set2.has(x)) return false;
 
-// Factorial function, used for computing some sizes of arrays. Taken from
-// lecture slides; is tail-recursive for speed.
-function fact(n,acc=1) {
-  if (n === 0) return acc;
-  else return fact(n-1,acc*n);
+  return true;
 }
 
 
@@ -28,16 +35,35 @@ function fact(n,acc=1) {
 //  graph => an adjacency matrix for the undirected, weighted graph.
 //  unvisited => a list of unvisited vertices, defaulting to all of them
 //  start => a user-specified vertex from which the tour begins
-let storedTours = [];       // Store all tours and sub-tours when encountered
+let storedTours = new Array(2);       // Store all tours and sub-tours
+storedTours[0] = new Array();
+storedTours[1] = new Array();
 
 function heldKarpMemo(graph,unvisited,start) {
-  return;
+
+  // Let's start with a stupid-slow memoization check
+  for (let i = 0; i < storedTours[0].length; i++) {
+    if (sameSet(unvisited,storedTours[0][i])) return storedTours[1][i];
+  }
+
+  if (unvisited.length === 2) {
+    storedTours[0].push(new Set(unvisited));
+    storedTours[1].push(graph[unvisited[0]][unvisited[1]]);
+    return graph[unvisited[0]][unvisited[1]];
+  }
+
+
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+////                          Testing Held-Karp                            ////
+///////////////////////////////////////////////////////////////////////////////
+
 // Create a randomly weighted complete undirected graph for testing
 function graphMaker(length) {
-  graph = new Array(length);
+  let graph = new Array(length);
 
   for (let i = 0; i < length; i++) {
     graph[i] = new Array(length);
@@ -54,3 +80,4 @@ function graphMaker(length) {
 
   return graph;
 }
+
