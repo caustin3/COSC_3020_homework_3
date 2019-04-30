@@ -165,6 +165,102 @@ let finalCost = heldKarp(graph,unvisited,start);
 ////              The 2-opt stochastic local search algorithm              ////
 ///////////////////////////////////////////////////////////////////////////////
 
+// We begin with helper functions: one to randomly reverse part of a given
+// tour; and one to randomly generate a tour (e.g., to start the algorithm).
+
+
+// Randomize the elements of an array to find a random starting tour
+// Found at https://gomakethings.com/how-to-shuffle-an-array-with-vanilla-js/
+function shuffle(array) {
+	let i = array.length,
+	    temp, 
+      random_i;
+
+	// While there remain elements to shuffle...
+	while (i !== 0) {
+		//Pick a remaining element...
+		random_i = Math.floor(Math.random() * i);
+		i--;
+		
+    //And swap it with the current element.
+		temp = array[i];
+		array[i] = array[random_i];
+		array[random_i] = temp;
+	}
+	return array;
+}
+
+
+// Reverse the part of the route between indices i and k, returning the
+// new route.
+function two_opt_reversed(route,i,k) {	
+	
+  // Temporary copy of the input route  
+	let copy = route.slice();	
+
+	// Reverse the section of the reverse between i and k
+	for (let x = i-1, z=k-1; x < k; x++) {	
+		route[z] = copy[x];
+		z--;
+	}		
+	return route;	
+}
+
+
+// Let's try a different 2-opt algorithm that uses a convergence
+// criterion and no memoization. Still takes an adjacency matrix as input
+function twoOptIter(graph,start) {
+
+  // Small graph corner cases
+  if (graph.length <= 1) return 0;
+
+  // Function global variables
+  let tour = new Array(graph.length),
+      cost = Infinity,
+      maxIter = 100*graph.length*graph.length;
+
+
+  // Generate the random tour (save for the start vertex)
+  for (let i = 0; i < tour.length; i++) tour[i] = i;
+  tour = tour.filter(vert => vert !== start);
+
+  tour = shuffle(tour);
+
+  // Find the initial cost of the tour
+  for (let i = 0; i < tour.length - 1; i++) {
+    cost += graph[tour[i]][tour[i+1]];
+  }
+  
+  // Add the distance to the start
+  cost += graph[start][tour[0]];
+  
+  // Randomize the route, checking for convergence
+  for (let numIter = 0; numIter < maxIter; numIter++) {
+
+    // Temporary tour cost
+    let tempCost = 0;
+
+    // Boundaries on which to reverse the route
+    let i = Math.ceil(tour.length*Math.random()),
+        k = Math.ceil(tour.length*Math.random());
+
+    // Construct partially reversed tour and find its cost
+    tour = two_opt_reversed(tour,Math.min(i,k),Math.max(i,k));
+
+    for (let i = 0; i < tour.length - 1; i++) {
+      tempCost += graph[tour[i]][tour[i+1]];
+    }
+
+    tempCost += graph[start][tour[0]];
+
+
+    if (tempCost < cost) cost = tempCost;
+  }
+
+  return cost;
+}
+
+
 // 2-opt stochastic local search. Input graph: an adjacency matrix
 function two_opt(graph) {
 	
@@ -197,7 +293,6 @@ function two_opt(graph) {
       check_done++;	
     }
 
-
 		// Find a new route
 		let k = Math.floor(Math.random()*route.length+1),
         i = Math.floor(Math.random()*k+1);
@@ -219,46 +314,9 @@ function two_opt(graph) {
       routes_found.set(route.join("-"),new_cost);				
 		}		
 	
-    new_cost =0;
+    new_cost = 0;
 	}	
 	return cost;
-}
-
-
-// Reverse the part of the route between indices i and k, returning the
-// new route.
-function two_opt_reversed(route,i,k) {	
-	
-  // Temporary copy of the input route  
-	let copy = route.slice();	
-
-	// Reverse the section of the reverse between i and k
-	for (let x = i-1, z=k-1; x < k; x++) {	
-		route[z] = copy[x];
-		z--;
-	}		
-	return route;	
-}
-
-
-// Randomize the elements of an array to find a random starting rout
-// Found at https://gomakethings.com/how-to-shuffle-an-array-with-vanilla-js/
-function shuffle(array) {
-	let i = array.length,
-	temp, random_i;
-
-	// While there remain elements to shuffle...
-	while (i !== 0) {
-		//Pick a remaining element...
-		random_i = Math.floor(Math.random() * i);
-		i--;
-		
-    //And swap it with the current element.
-		temp = array[i];
-		array[i] = array[random_i];
-		array[random_i] = temp;
-	}
-	return array;
 }
 
 
@@ -294,7 +352,7 @@ function test(){
 	console.log("time is in milliseconds");
   console.log();
 	console.log("size:\t Held_Karp route:\t 2_opt route:\t Held_Karp time:\t 2_opt time:\t");
-	for(let i = 0; i , i < 8; i++ ){
+	for(let i = 0; i , i < 9; i++ ){
 		let graph = graphMaker(i);
 		let unvisited = new Array();
 		for (let i = 0; i < graph.length; i++) unvisited.push(i);
@@ -308,7 +366,8 @@ function test(){
 		Held_Karp_shortest = heldKarp(graph,unvisited,start);
 		t1 = Date.now();	
 		t2 = Date.now();
-		two_opt_shortest = two_opt(graph);		
+    two_opt_shortest = twoOptIter(graph,start);
+		//two_opt_shortest = two_opt(graph);		
 		t3 = Date.now();
 		console.log(graph.length+":\t"+Held_Karp_shortest+":\t"+two_opt_shortest+
         ":\t"+(t1-t0)+":\t"+(t3-t2));
@@ -327,7 +386,8 @@ function aParticularTest() {
       unvisited = [0,1,2,3,4];
 
   let heldCost = heldKarp(graph,unvisited,start);
-  let twoOptCost = two_opt(graph);
+  //let twoOptCost = two_opt(graph);
+  let twoOptCost = twoOptIter(graph,start);
 
   console.log("The graph:");
   console.log(graph);
