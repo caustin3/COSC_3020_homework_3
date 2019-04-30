@@ -43,7 +43,9 @@ let storedTours = new Array(2);       // Store all tours and sub-tours
 function heldKarp(graph,unvisited,start) {
   // Memoization check (slow)
   for (let i = 0; i < storedTours[0].length; i++) {
-    if (sameSet(unvisited,storedTours[0][i])) return storedTours[1][i];
+    if (sameSet(unvisited,storedTours[0][i])) {
+      return storedTours[1][i];
+    }
   }
 
   if (unvisited.length === 2) {
@@ -58,20 +60,20 @@ function heldKarp(graph,unvisited,start) {
   else {
     // Filter out the start vertex
     let theRest = unvisited.filter(vert => vert !== start);
-    console.log(theRest);
 
     let tour = new Set(theRest);
     let cost = Infinity;
-    for (let vert in theRest) {
-      let testCost = heldKarp(graph,theRest,vert)+ graph[start][vert];
-      console.log(testCost);
+    for (let i = 0; i < theRest.length; i++) {
+      let testCost = heldKarp(graph,theRest,theRest[i]) + 
+        graph[start][theRest[i]];
+
       if (testCost < cost) {
         cost = testCost;
       }
     }
+
     storedTours[0].push(tour);
     storedTours[1].push(cost);
-
     return cost;
   }
 }
@@ -81,6 +83,12 @@ function heldKarp(graph,unvisited,start) {
 ///////////////////////////////////////////////////////////////////////////////
 ////                          Testing Held-Karp                            ////
 ///////////////////////////////////////////////////////////////////////////////
+
+// Preliminary testing was done with the dumbSalesman() function uploaded by
+// Thomas Wise to Piazza as part of TestHeldKarp.js. For space efficiency,
+// this code has been deleted from the final version of this script; but we
+// are nevertheless grateful to Mr. Wise for his assistance.
+
 
 // Create a randomly weighted complete undirected graph for testing
 function graphMaker(length) {
@@ -102,13 +110,13 @@ function graphMaker(length) {
   return graph;
 }
 
-let graph = graphMaker(3);
+let graph = graphMaker(5);
 console.log(graph);
 
 let unvisited = new Array();
 for (let i = 0; i < graph.length; i++) unvisited.push(i);
 
-let start = Math.ceil(graph.length*Math.random());
+let start = Math.floor(graph.length*Math.random());
 
 console.log("Start = " + start);
-console.log("Final cost is " + heldKarp(graph,unvisited,start));
+let finalCost = heldKarp(graph,unvisited,start);
