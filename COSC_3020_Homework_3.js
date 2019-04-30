@@ -196,7 +196,7 @@ function shuffle(array) {
 function two_opt_reversed(route,i,k) {	
 	
   // Temporary copy of the input route  
-	let copy = route.slice();	
+	let copy = route;
 
 	// Reverse the section of the reverse between i and k
 	for (let x = i-1, z=k-1; x < k; x++) {	
@@ -327,14 +327,24 @@ function two_opt(graph) {
 
 // The shuffle() function runs in time linear in the input size; in the worst
 // case this shuffles the entire path, involving all vertices of the graph, so
-// this is THETA(n). It also creates a single temporary array, requiring 
-// THETA(n) extra memory.
+// this is THETA(n). It also creates a single temporary variable, requiring 
+// only THETA(1) extra memory.
 
 // Likewise, the two_opt_reversed() function operates in time linear in the
 // distance between the indices and creates a temporary array of the same size;
 // in the worst case, this is THETA(n) in both time and space complexity.
 
-// Finally, the two_opt() function 
+// Finally, the twoOptIter() function runs exactly 100*n^2 times, where n is the
+// number of vertices in the graph. We chose this value because the number of
+// edges in the graph is on the order of n^2, so we believe we have a good
+// chance of finding a nice approximation to the shortest tour. The algorithm
+// calls shuffle() exactly once, but it calls two_opt_reversed() once for each
+// run; it also requires THETA(n) time to calculate the updated cost. Apart
+// from the extra space required by its helper functions, this function only
+// requires constant extra memory.
+
+// So the overall runtime of the 2-opt stochastic local search is THETA(n*n^2)
+// = THETA(n^3), with THETA(n) space needed before the first run.
 
 
 
