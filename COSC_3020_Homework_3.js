@@ -196,7 +196,7 @@ function shuffle(array) {
 function two_opt_reversed(route,i,k) {	
 	
   // Temporary copy of the input route  
-	let copy = route;
+	let copy = route.slice();
 
 	// Reverse the section of the reverse between i and k
 	for (let x = i-1, z=k-1; x < k; x++) {	
