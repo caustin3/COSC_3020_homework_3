@@ -297,64 +297,7 @@ function twoOptIter(graph,start) {
 // Test the runtime for both algorithms on a sequence of graphs of increasing
 // size
 
-/*
-function test() {
-	let t0,
-      t1,
-      t2,
-      t3,
-      graph,
-      Held_Karp_shortest,
-      two_opt_shortest;
-	
-  console.log("time is in milliseconds");
-  console.log();
-	console.log("size:\t Held_Karp route:\t 2_opt route:\t Held_Karp time:\t" +
-      "2_opt time:\t");
-	
-  for (let i = 0; i , i < 11; i++) {
-		let graph = graphMaker(i);
-		let unvisited = new Array();
-		for (let i = 0; i < graph.length; i++) unvisited.push(i);
-		
-    let start = Math.floor(graph.length*Math.random());
-		
-		graph = graphMaker(i);
-    
-    console.log("Start vertex: " + start);
-    console.log(graph);    
-    console.log();
-	if(i<10){
-		t2 = Date.now();
-		two_opt_shortest = twoOptIter(graph,start);
-		t3 = Date.now();
-		console.log("two_opt time: " +(t3-t2));	
-		t0 = Date.now();
-		Held_Karp_shortest = heldKarp(graph,unvisited,start);
-		t1 = Date.now
-		();
-		console.log("Held_Karptime: " +(t1-t0));			
-		console.log(graph.length+":\t"+Held_Karp_shortest+":\t"+two_opt_shortest+
-			":\t"+(t1-t0)+":\t"+(t3-t2));
-		}else {
-		let graph = graphMaker(27000);	
-		t2 = Date.now();
-		two_opt_shortest = twoOptIter(graph,start);
-		t3 = Date.now();
-		console.log("two_opt time: " +(t3-t2));	
-		let graph = graphMaker(11);	
-		t0 = Date.now();
-		Held_Karp_shortest = heldKarp(graph,unvisited,start);
-		t1 = Date.now
-		();
-		console.log("Held_Karptime: " +(t1-t0));			
-		console.log(graph.length+":\t"+Held_Karp_shortest+":\t"+two_opt_shortest+
-			":\t"+(t1-t0)+":\t"+(t3-t2));
-		
-		}		
-	}
-}
-*/
+
 function test() {
 	console.log("time is in milliseconds");
 	console.log();
@@ -381,7 +324,7 @@ function test() {
 			":\t"+(t1-t0)+":\t"+(t3-t2));
 	}
 	console.log("size of the graph\t2_opt_shortest route\ttime")
-	for (let i = 1400; i , i < 1600; i = i+ 100) {
+	for (let i = 0; i , i < 1600; i = i+ 100) {
 		let graph = graphMaker(i);		
 		let start = Math.floor(graph.length*Math.random());
 		graph = graphMaker(i);   		
