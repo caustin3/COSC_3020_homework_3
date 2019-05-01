@@ -297,6 +297,7 @@ function twoOptIter(graph,start) {
 // Test the runtime for both algorithms on a sequence of graphs of increasing
 // size
 
+/*
 function test() {
 	let t0,
       t1,
@@ -311,7 +312,7 @@ function test() {
 	console.log("size:\t Held_Karp route:\t 2_opt route:\t Held_Karp time:\t" +
       "2_opt time:\t");
 	
-  for (let i = 0; i , i < 9; i++) {
+  for (let i = 0; i , i < 11; i++) {
 		let graph = graphMaker(i);
 		let unvisited = new Array();
 		for (let i = 0; i < graph.length; i++) unvisited.push(i);
@@ -323,18 +324,86 @@ function test() {
     console.log("Start vertex: " + start);
     console.log(graph);    
     console.log();
-
-		t0 = Date.now();
-    Held_Karp_shortest = heldKarp(graph,unvisited,start);
-    t1 = Date.now();	
-
+	if(i<10){
 		t2 = Date.now();
-    two_opt_shortest = twoOptIter(graph,start);
+		two_opt_shortest = twoOptIter(graph,start);
 		t3 = Date.now();
-
+		console.log("two_opt time: " +(t3-t2));	
+		t0 = Date.now();
+		Held_Karp_shortest = heldKarp(graph,unvisited,start);
+		t1 = Date.now
+		();
+		console.log("Held_Karptime: " +(t1-t0));			
 		console.log(graph.length+":\t"+Held_Karp_shortest+":\t"+two_opt_shortest+
-        ":\t"+(t1-t0)+":\t"+(t3-t2));
+			":\t"+(t1-t0)+":\t"+(t3-t2));
+		}else {
+		let graph = graphMaker(27000);	
+		t2 = Date.now();
+		two_opt_shortest = twoOptIter(graph,start);
+		t3 = Date.now();
+		console.log("two_opt time: " +(t3-t2));	
+		let graph = graphMaker(11);	
+		t0 = Date.now();
+		Held_Karp_shortest = heldKarp(graph,unvisited,start);
+		t1 = Date.now
+		();
+		console.log("Held_Karptime: " +(t1-t0));			
+		console.log(graph.length+":\t"+Held_Karp_shortest+":\t"+two_opt_shortest+
+			":\t"+(t1-t0)+":\t"+(t3-t2));
+		
+		}		
 	}
+}
+*/
+function test() {
+	console.log("time is in milliseconds");
+	console.log();
+	console.log("size:\t Held_Karp route:\t 2_opt route:\t Held_Karp time:\t" +
+      "2_opt time:\t");
+	for (let i = 0; i , i < 11; i++) {
+		let graph = graphMaker(i);
+		let unvisited = new Array();
+		for (let i = 0; i < graph.length; i++) unvisited.push(i);
+		
+		let start = Math.floor(graph.length*Math.random());
+		graph = graphMaker(i);
+    
+		console.log("Start vertex: " + start);
+		console.log(graph);    
+		console.log();
+		t2 = Date.now();
+		two_opt_shortest = twoOptIter(graph,start);
+		t3 = Date.now();		
+		t0 = Date.now();
+		Held_Karp_shortest = heldKarp(graph,unvisited,start);
+		t1 = Date.now();					
+		console.log(graph.length+":\t"+Held_Karp_shortest+":\t"+two_opt_shortest+
+			":\t"+(t1-t0)+":\t"+(t3-t2));
+	}
+	console.log("size of the graph\t2_opt_shortest route\ttime")
+	for (let i = 0; i , i < 7500; i = i+ 100) {
+		let graph = graphMaker(i);		
+		let start = Math.floor(graph.length*Math.random());
+		graph = graphMaker(i);   		
+		t2 = Date.now();
+		two_opt_shortest = twoOptIter(graph,start);
+		t3 = Date.now();		
+		console.log(graph.length+":\t"+two_opt_shortest+":\t"+(t3-t2));
+	}
+	
+	let graph = graphMaker(11);
+	let unvisited = new Array();
+	for (let i = 0; i < graph.length; i++) unvisited.push(i);
+	let start = Math.floor(graph.length*Math.random());
+	console.log("Start vertex: " + start);
+	console.log(graph);    
+	console.log();
+	console.log("size of the graph\heldKarp route\ttime")
+	t0 = Date.now();
+	Held_Karp_shortest = heldKarp(graph,unvisited,start);
+	t1 = Date.now();					
+	console.log(graph.length+":\t"+Held_Karp_shortest+":\t"+(t1-t0));
+	
 }
 
 // A test of a particular graph giving an old version of 2-opt trouble
