@@ -360,7 +360,7 @@ function test() {
 	console.log();
 	console.log("size:\t Held_Karp route:\t 2_opt route:\t Held_Karp time:\t" +
       "2_opt time:\t");
-	for (let i = 0; i , i < 11; i++) {
+	for (let i = 0; i , i < 9; i++) {
 		let graph = graphMaker(i);
 		let unvisited = new Array();
 		for (let i = 0; i < graph.length; i++) unvisited.push(i);
@@ -381,7 +381,7 @@ function test() {
 			":\t"+(t1-t0)+":\t"+(t3-t2));
 	}
 	console.log("size of the graph\t2_opt_shortest route\ttime")
-	for (let i = 0; i , i < 7500; i = i+ 100) {
+	for (let i = 1400; i , i < 1600; i = i+ 100) {
 		let graph = graphMaker(i);		
 		let start = Math.floor(graph.length*Math.random());
 		graph = graphMaker(i);   		
@@ -398,12 +398,11 @@ function test() {
 	console.log("Start vertex: " + start);
 	console.log(graph);    
 	console.log();
-	console.log("size of the graph\heldKarp route\ttime")
+	console.log("size of the graph\theldKarp route\ttime")
 	t0 = Date.now();
 	Held_Karp_shortest = heldKarp(graph,unvisited,start);
 	t1 = Date.now();					
-	console.log(graph.length+":\t"+Held_Karp_shortest+":\t"+(t1-t0));
-	
+	console.log(graph.length+":\t"+Held_Karp_shortest+":\t"+(t1-t0));1	
 }
 
 // A test of a particular graph giving an old version of 2-opt trouble
